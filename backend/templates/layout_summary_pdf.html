@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Summary Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <style>
+    @page {
+      background: url("{{ logo_url }}") no-repeat center center;
+      background-size: 60%;
+      margin: 30mm;
+    }
+  
+    body {
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">
+    <img src="{{ logo_url }}" style="opacity: 0.05; width: 60%; position: fixed; top: 25%; left: 20%; transform: rotate(-30deg); z-index: 0;">
+  </div>
+ <!-- Main Content Area -->
+ <div class="main-content ">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-center mb-4 ">
+      <img src="{{ logo_url if is_pdf else url_for('static', filename='images/logo.png') }}" 
+      alt="Logo" 
+      style="height: 60px; width: auto;" 
+      class="me-3">
+       <!-- <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" height="60" class="me-3"> -->
+      <h1 class="mb-0">ShreeKhetra Odia Samaj</h1>
+    </div>  
+    {% block subtitle %}
+    <!-- Optional subtitle -->
+    {% endblock %}
+  {% block content %}{% endblock %}
+</body>
+</html>

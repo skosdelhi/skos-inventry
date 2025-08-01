@@ -1,0 +1,34 @@
+<!-- backend/templates/guests/list.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Guest List{% endblock %}
+
+{% block content %}
+<h2>Guest Contributions</h2>
+<a href="{{ url_for('guests.add_guest') }}" class="btn btn-primary mb-3">➕ Add Guest</a>
+<a href="{{ url_for('guests.upload_guests') }}" class="btn btn-success mb-2">📤 Upload CSV</a>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for guest in guests %}
+    <tr>
+      <td>{{ guest.id }}</td>
+      <td>{{ guest.name }}</td>
+      <td>{{ guest.phone or '' }}</td>
+      <td>{{ guest.address or '' }}</td>
+      
+      <td>
+        <a href="{{ url_for('guests.edit_guest', id=guest.id) }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+        <form method="POST" action="{{ url_for('guests.delete_guest', id=guest.id) }}" style="display:inline;">
+          <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this guest?')">🗑️ Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

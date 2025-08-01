@@ -1,0 +1,130 @@
+{% extends 'layout.html' %}
+{% block title %}Event Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 ">🎉 Event Summary Dashboard</h2>
+{% if currentbalance > 0 %}
+<span class="d-block fw-bold my-2">
+  Account Balance By - {{ current_date.strftime('%d %B %Y') }} <br>
+  Balance: {{ currentbalance | inr }} &nbsp; | &nbsp;
+  Bank Interest: {{ bank_interest | inr  }} &nbsp; | &nbsp;
+  <span class="text-success">Total Bank Balance: {{ (currentbalance + bank_interest)  | inr  }}</span>
+</span>
+{% endif %}
+ 
+<form method="get" class="mb-4">
+    <label for="eventSelect"><strong>Select Events (up to 3):</strong></label>
+    <select name="event_ids" id="eventSelect" class="form-control" multiple size="4">
+      {% for event in all_events %}
+        <option value="{{ event.id }}"
+          {% if event.id in selected_ids %}selected{% endif %}>
+          {{ event.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-primary mt-2" type="submit">Update Dashboard</button>
+    <small class="text-muted d-block mt-1">(Hold Ctrl or Cmd to select multiple)</small>
+  </form>
+  
+  <div class="row">
+    {% for event in event_summaries %}
+    <div class="col-sm-6 col-md-4">
+      <div class="card mb-4 shadow">
+        <div class="card-body">
+          <h5 class="card-title text-primary">{{ event.name }}</h5>
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>👥 Member Chanda:</span>
+              <span>{{ event.member_chanda  | inr  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>📚 Book Collection:</span>
+              <span>{{ event.book_chanda  | inr  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>🎫 Guest Payment:</span>
+              <span>{{ event.guest_payment  | inr  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between fw-bold">
+              <span>💰 Total Collection:</span>
+              <span>{{ event.total_collection  | inr }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between text-danger">
+              <span>💸 Expenses:</span>
+              <span>{{ event.total_expenses  | inr  }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between text-success bg-light fw-bold">
+              <span>📊 Balance:</span>
+              <span>{{ event.balance | inr  }}</span>
+            </li>
+          </ul>
+          
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-between">
+            <a href="{{ url_for('main.summary_report', event_id=event.id) }}" class="btn btn-outline-primary btn-sm">
+              📄 Summary Report
+            </a>
+            <a href="{{ url_for('main.view_full_report', event_id=event.id) }}" class="btn btn-outline-secondary btn-sm">
+              📋 Detailed Report
+            </a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+
+<h4 class="mt-5">📈 Income vs Expense (Last 3 Events)</h4>
+<canvas id="eventChart" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('eventChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar', // 🔄 Changed from 'bar' to 'line'
+    data: {
+      labels: {{ chart_labels | tojson }},
+      datasets: [
+        {
+          label: 'Income',
+          data: {{ chart_income | tojson }},
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Expense',
+          data: {{ chart_expense | tojson }},
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Income vs Expense (Line Chart)'
+        },
+        legend: {
+          position: 'top'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+
+{% endblock %}

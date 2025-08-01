@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+{% block title %}Expenses{% endblock %}
+
+{% block content %}
+<h2>All Expenses</h2>
+<a href="{{ url_for('expenses.add_expense') }}" class="btn btn-primary mb-3">➕ Add Expense</a>
+
+<!-- Filter Form -->
+<form method="get" class="form-inline mb-3 d-flex flex-wrap align-items-center gap-2">
+  <!-- Event Filter -->
+  <label for="eventFilter">Filter by Event:</label>
+  <select name="event_id" id="eventFilter" class="form-control mx-2" onchange="this.form.submit()">
+    <option value="">-- All Events --</option>
+    {% for event in events %}
+      <option value="{{ event.id }}" {% if selected_event_id == event.id %}selected{% endif %}>
+        {{ event.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- Category Filter -->
+  <label for="categoryFilter">Category:</label>
+  <select name="category_id" id="categoryFilter" class="form-control mx-2" onchange="this.form.submit()">
+    <option value="">-- All Categories --</option>
+    {% for cat_id, cat_name in categories.items() %}
+      <option value="{{ cat_id }}" {% if selected_category_id == cat_id %}selected{% endif %}>
+        {{ cat_name }}
+      </option>
+    {% endfor %}
+  </select>  
+</form>
+
+<!-- Expenses Table -->
+<table class="table table-bordered">
+  <thead>
+    <tr class="table-secondary fw-bold">
+      <td colspan="4" class="text-end">Total:</td>
+      <td colspan="2">₹{{ '{:,.2f}'.format(total_expenses) }}</td>
+    </tr>
+    <tr>
+      <th>Category</th>
+      <th>Heading</th>
+      <th>Amount</th>
+      <th>Bought_by</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for exp in expenses %}
+    <tr>
+      <td>{{ categories.get(exp.category_id, "Unknown") }}</td>
+      <td>{{ exp.heading }}</td>
+      <td>₹{{ '%.2f' % exp.amount }}</td>
+       <td>
+          {% if exp.bought_by %}
+            {{ exp.bought_by | map(attribute='name') | map('spacefirst_name') | join(', ') }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      <td>
+        <a href="{{ url_for('expenses.edit_expense', id=exp.id) }}" class="btn btn-warning btn-sm">Edit</a>
+        <form method="POST" action="{{ url_for('expenses.delete_expense', id=exp.id) }}" style="display:inline;" onsubmit="return confirm('Delete this expense?');">
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <!-- Total Row (This Page) -->
+    <tr class="table-secondary fw-bold">
+      <td colspan="3" class="text-end">Total (This Page):</td>
+      <td colspan="3">₹{{ '{:,.2f}'.format(total_expenses_pg) }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Pagination -->
+<nav>
+  <ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('expenses.list_expenses', page=pagination.prev_num, event_id=selected_event_id, category_id=selected_category_id) }}">&laquo; Prev</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+    {% endif %}
+
+    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if page_num %}
+        {% if page_num == pagination.page %}
+        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+        {% else %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('expenses.list_expenses', page=page_num, event_id=selected_event_id, category_id=selected_category_id) }}">{{ page_num }}</a>
+        </li>
+        {% endif %}
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('expenses.list_expenses', page=pagination.next_num, event_id=selected_event_id, category_id=selected_category_id) }}">Next &raquo;</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}

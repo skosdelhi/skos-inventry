@@ -1,0 +1,32 @@
+<!-- templates/events.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Banks{% endblock %}
+
+{% block content %}
+<h2>All Events</h2>
+<a href="{{ url_for('bank.add_bank') }}" class="btn btn-primary mb-3">➕ Add Event</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th><th>Event</th><th>Withdrawal</th><th>Interest</th><th>Balance</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bk in bank %}
+    <tr>
+      <td>{{ bk.id }}</td>
+      <td>{{ bk.event.name }}</td>
+      <td>{{ bk.withdrawal_amount | inr }}</td>
+      <td>{{ bk.interest_amount | inr }}</td>
+      <td>{{ bk.balance_amount  | inr}}</td>
+      <td>
+        <a href="{{ url_for('bank.edit_bank', id=bk.id) }}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{{ url_for('bank.delete_bank', id=bk.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

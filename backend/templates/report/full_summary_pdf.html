@@ -1,0 +1,168 @@
+{% extends 'layout_pdf.html' %}
+
+{% block content %}
+<style>
+  @page {
+    margin-top: 15px; /* or 0 if you want no margin */
+    margin-bottom: 10px;
+  }
+  body {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  /* Compact table styling */
+  table.table {
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  table.table th,
+  table.table td {
+    padding: 4px 6px;
+    line-height: 1.1;
+  }
+</style>
+
+<div class="d-flex align-items-center mb-4">
+  <img src="{{ logo_url }}" alt="Logo" style="height: 60px;" class="me-3">
+  <h2 class="mb-0">ShreeKhetra Odia Samaj - Summary Report</h2>
+</div>
+
+<h4>📋 Collection Summary for :{{ event.name }} ({{ event.date.strftime('%d-%b-%Y') }}</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Source</th><th>Amount (₹)</th></tr></thead>
+  <tbody>
+    <tr><td>👤 Member Collection</td><td>{{  member_collection | inr }}</td></tr>
+    <tr><td>🧑‍ Guest & Other Collection</td><td>{{  guest_collection | inr }}</td></tr>
+    <tr><td>📚 Book Collection</td><td>₹{{  book_collection | inr }}</td></tr>
+    <tr class="table-success"><th>Total Collection</th><th>{{  total_collection | inr }}</th></tr>
+  </tbody>
+</table>
+
+<h4>💸 Expense Summary</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Category</th><th>Amount (₹)</th></tr></thead>
+  <tbody>
+    {% for cat, amt in expense_totals_by_category.items() %}
+    <tr><td>{{ cat }}</td><td>{{  amt | inr }}</td></tr>
+    {% endfor %}
+    <tr class="table-danger"><th>Total Expenses</th><th>{{  total_expenses | inr }}</th></tr>
+  </tbody>
+</table>
+
+<h4>📊 Final Balances</h4>
+<table class="table table-bordered">
+  <tr><th>Balance (Collection - Expenses)</th><td>{{  balance | inr }}</td></tr>
+  <tr><th>Bank Withdrawal</th><td>{{  bank_withdrawal | inr }}</td></tr>
+   <tr><th>Bank Balance</th><td>{{  bank_balance | inr }}</td></tr>
+  <tr><th>Bank Interest</th><td>{{  bank_interest | inr }}</td></tr>
+  <tr class="{{ 'table-success' if balance >= 0 else 'table-danger' }}">
+    <th>Total Balance</th>
+    <td><strong>{{  (balance + bank_withdrawal + bank_interest + bank_balance) | inr }}</strong></td>
+  </tr>
+  
+</table>
+
+<h4>📒 Chanda Collection Details</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Chanda (₹)</th>
+      <th>Book(₹)</th>
+      <th>Total (₹)</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    {% set ns = namespace(total_own=0, total_collected=0) %}
+    {% for c in chandas %}
+    <tr>
+      <td>{{ c.member.name }}</td>
+      <td>{{  c.own_payment | inr }}</td>
+      <td>{{  c.collected_amount | inr }}</td>
+      <td>{{  (c.own_payment + c.collected_amount) | inr}}</td>
+    </tr>
+    {% set ns.total_own = ns.total_own + c.own_payment  %}
+    {% set ns.total_collected = ns.total_collected +  c.collected_amount %}
+    {% endfor %}
+    <tr class="table-success">
+      <th>Total</th>
+      <th>{{  ns.total_own | inr }}</th>
+      <th>{{  ns.total_collected | inr }}</th>
+      <th>{{  (ns.total_own + ns.total_collected) | inr }}</th>
+    </tr>
+  </tbody>
+  
+</table>
+
+<hr class="my-4">
+
+<h4>🧾 Guest Payments</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Name</th><th>Event</th><th>Amount (₹)</th></tr>
+  </thead>
+  
+  <tbody>
+    {% set ns = namespace(total_amount=0) %}
+    {% for g in guests %}
+    <tr>
+      <td>{{ g.guest.name }}</td>
+      <td>{{ g.event.name }}</td>
+      <td>{{  g.amount | inr }}</td>
+      
+    </tr>
+    {% set ns.total_amount = ns.total_amount + g.amount %}
+    {% endfor %}
+    <tr class="table-success">
+     <th ></th>  
+      <th class="text-end">Total</th>
+      <th >{{  ns.total_amount | inr }}</th>
+      
+    </tr>
+  </tbody>
+</table>
+
+<h4>💸 Expense Details</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Category</th><th>Heading</th><th>Amount (₹)</th><th>Bought By</th></tr>
+  </thead>
+  
+  <tbody>
+    {% set ns = namespace(total_amount=0) %}
+    {% for exp in expenses %}
+      {% set ns.total_amount = ns.total_amount + exp.amount %}
+      <tr>
+        <td>{{ categories.get(exp.category_id, "Unknown") }}</td>
+        <td>{{ exp.heading }}</td>
+        <td>{{ '%.2f' % exp.amount }}</td>
+        
+        <td>
+          {% if exp.bought_by %}
+            {{ exp.bought_by | map(attribute='name') | map('spacefirst_name') | join(', ') }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        
+      </tr>
+    {% endfor %}
+    <tr class="table-success">
+      <th></th>
+      <th class="text-end">Total</th>
+      <th>₹{{  ns.total_amount | inr }}</th>
+      <th></th>
+    </tr>
+  </tbody>
+  
+</table>
+<table>
+  <tr>
+    <td style="width: 200px; height: auto;">
+      <img src="{{ statement_img }}" alt="Statement" style="max-width: 100%; height: auto;">
+    </td>
+  </tr>
+</table>
+{% endblock %}

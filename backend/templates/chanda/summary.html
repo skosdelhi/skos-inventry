@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block title %}Chanda Summary{% endblock %}
+
+{% block content %}
+<h2>Chanda Summary</h2>
+
+<h4>🔷 Total by Event</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Event</th><th>Own Payment</th><th>Collected Amount</th></tr></thead>
+  <tbody>
+    {% for event, own, collected in event_summary %}
+    <tr>
+      <td>{{ event }}</td>
+      <td>{{ own or 0 }}</td>
+      <td>{{ collected or 0 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h4 class="mt-4">🔸 Total by Member</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Member</th><th>Own Payment</th><th>Collected Amount</th><th>Total Amount</th></tr></thead>
+  <tbody>
+    {% set ns = namespace(total_own=0, total_collected=0, total_combined=0) %}
+    {% for member, own, collected in member_summary %}
+    {% set total = (own or 0) + (collected or 0) %}
+    <tr>
+      <td>{{ member }}</td>
+      <td>{{ own or 0 }}</td>
+      <td>{{ collected or 0 }}</td>
+      <td>{{ total }}</td>
+      
+    </tr>
+    {% set ns.total_own = ns.total_own + (own or 0) %}
+    {% set ns.total_collected = ns.total_collected + (collected or 0) %}
+    {% set ns.total_combined = ns.total_combined + total %}
+    {% endfor %}
+    <tr class="table-success fw-bold">
+      <td>Total</td>
+      <td>{{ ns.total_own }}</td>
+      <td>{{ ns.total_collected }}</td>
+      <td>{{ ns.total_combined}}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+{% endblock %}

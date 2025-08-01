@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Document{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <style>
+    @page {
+      margin: 0mm 20mm 0mm 20mm; /* top right bottom left */
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .content {
+      padding-bottom: 45mm;  /* reserve space for footer */
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0 -20mm;
+      height: 30mm;
+      background-color: #e6f0ff;
+      font-size: 13px;
+      text-align: center;
+      border-top: 2px solid #007bff;
+      padding-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #003366;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      background-color: #e6f0ff;
+      padding: 12px 20px;
+      margin: 0 -20mm 15px -20mm;
+      border-bottom: 2px solid #234c77;
+    }
+
+    .header img {
+      height: 60px;
+      width: auto;
+      margin-right: 20px;
+    }
+
+    .header-info h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #0a3d62;
+      font-weight: bold;
+    }
+
+    .header-info p {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #37474f;
+    }
+
+    .header-info p:last-child {
+      font-size: 13px;
+      font-style: italic;
+      color: #6c757d;
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+
+ <!-- FANCY MAJESTIC HEADER -->
+<div class="header" style="
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: linear-gradient(to right, #1a237e, #3949ab, #5c6bc0);
+    color: white;
+    padding: 20px 25px;
+    margin: 0 -20mm 15px -20mm;
+    border-bottom: 4px solid #ffcc00;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    font-family: 'Georgia', serif;
+">
+
+<!-- Logo -->
+<img src="{{ logo_url }}" alt="Logo" style="height: 65px; width: auto; margin-right: px;margin-left: 8px; border-radius: 5px; box-shadow: 0 0 3px #ccc; background: white; padding: 3px;">
+
+<!-- Org Info -->
+<div style="line-height: 1.5;">
+  <h2 style="margin: 0; font-size: 28px; font-weight: bold; color: #ffeb3b;">ShreeKhetra Odia Samaj</h2>
+  <p style="margin: 2px 0; font-size: 14px; color: #e0f7fa;">
+    Bhubaneswar, Odisha &nbsp; | &nbsp; Regd. No. <span style="color: #ffffff;">123/2023</span>
+  </p>
+  <p style="margin: 0; font-size: 13px; font-style: italic; color: #ffecb3;">
+    Serving Community Through Culture & Devotion
+  </p>
+</div>
+</div>
+
+
+  <!-- PAGE CONTENT -->
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    © {{ current_year or 2025 }} ShreeKhetra Odia Samaj 
+  </footer>
+
+</body>
+</html>

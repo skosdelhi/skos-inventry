@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}SKOS{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">  
+  <style>
+    .sidebar {
+      height: 100vh;
+      background-color: #343a40;
+      padding-top: 20px;
+      color: white;
+      position: fixed;
+      width: 200px;
+    }
+    .sidebar a {
+      color: white;
+      padding: 10px 20px;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+    }
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background: #f1f1f1;
+      margin-top: 30px;
+    }
+  </style>
+  {% if is_pdf %}
+  <style>
+    @page {
+    margin-top: 15px; /* or 0 if you want no margin */
+    margin-bottom: 10px;
+      }
+    body {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      }
+    .main-content {
+      margin-left: 0 !important;
+      padding: 20px;
+    }
+  </style>
+  {% endif %}
+
+  {% if is_pdf %}
+<style>
+  body {
+    font-family: "DejaVu Sans", Arial, sans-serif !important;
+  }
+  table {
+    font-family: "DejaVu Sans", Arial, sans-serif !important;
+    font-size: 14px;
+  }
+</style>
+{% endif %}
+</head>
+<body class="{% if is_pdf %}pdf{% endif %} " >
+  {% if current_user.is_authenticated %}
+    {% if not is_pdf %}
+    <!-- Sidebar -->
+    <div class="sidebar ">
+      
+      <h5 class="text-center"><a href="{{ url_for('dashboard.dashboard') }}">📊 Dashboard</a></h5>
+      <hr style="border-color: white;">
+      <a href="{{ url_for('members.list_members') }}">
+        👥 Members <span class="badge bg-light text-dark">{{ count_members }}</span>
+      </a>
+      <a href="{{ url_for('events.list_events') }}">📅 Manage Events <span class="badge bg-light text-dark">{{ count_events }}</span></a>
+      <a href="{{ url_for('chanda.list_chanda') }}">💵 Manage Chanda</a>
+      <a href="{{ url_for('guests.list_guests') }}">🧑‍💼 Manage Guest<span class="badge bg-light text-dark">{{ count_guests }}</span></a>
+      <!-- <a href="{{ url_for('chanda.chanda_summary') }}">📄 Chanda Summary</a> -->
+      <a href="{{ url_for('guest_payments.list_payments') }}">💰 Guest Payments</a>
+      <a href="{{ url_for('expenses.list_expenses') }}">🧾 Manage Expenses</a>
+      <a href="{{ url_for('bank.list_bank') }}">🧾 Manage Bank</a>
+      <a href="{{ url_for('skosdoc.generate_police_letter') }}">🚓 Police Permission</a>
+     <!--  <a href="{{ url_for('main.view_full_report') }}">📘 Full Report</a>
+      <a href="{{ url_for('main.summary_report') }}">📊 Summary Report</a> 
+      
+      <a href="{{ url_for('skosdoc.generate_chiefguest_letter') }}">🎤 Chief Guest Letter</a>
+      <a href="{{ url_for('skosdoc.generate_electricity_letter') }}">⚡ Electricity Letter</a>-->
+      <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+    
+  {% else %}
+      <a href="{{ url_for('auth.login') }}">🔐 Login</a>
+    {% endif %}
+
+    
+  </div>
+  {% endif %}
+  
+  <!-- Main Content Area -->
+  <div class="main-content ">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-center mb-4 ">
+      <img src="{{ logo_url if is_pdf else url_for('static', filename='images/logo.png') }}" 
+      alt="Logo" 
+      style="height: 60px; width: auto;" 
+      class="me-3">
+       <!-- <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" height="60" class="me-3"> -->
+      <h1 class="mb-0">ShreeKhetra Odia Samaj</h1>
+    </div>
+    
+    {% block subtitle %}
+    <!-- Optional subtitle -->
+    {% endblock %}
+    
+    <!-- Page Content -->
+    {% block content %}{% endblock %}
+   
+    <!-- Footer -->
+    <footer>
+      &copy; 2025 ShreeKhetra Odia Sama | All rights reserved
+    </footer>
+  </div>
+ 
+</body>
+</html>

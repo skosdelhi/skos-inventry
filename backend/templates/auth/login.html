@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+  <div class="login-box mx-auto mt-5" style="max-width: 400px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+    <h4 class="text-center mb-4">🔐 Login</h4>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Login Form -->
+    <form method="post">
+      <input type="text" name="username" class="form-control mb-3" placeholder="Username" required>
+      <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+  </div>
+{% endblock %}

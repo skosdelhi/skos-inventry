@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+{% block title %}Chanda Records{% endblock %}
+{% block content %}
+<h2>Chanda Contributions</h2>
+<a href="{{ url_for('chanda.add_chanda') }}" class="btn btn-success mb-3">➕ Add Chanda</a>
+<a href="{{ url_for('chanda.upload_chandas') }}" class="btn btn-success mb-2">📤 Upload CSV</a>
+<form method="get" class="form-inline mb-3">
+  <label for="eventFilter">Filter by Event:</label>
+  <select name="event_id" id="eventFilter" class="form-control mx-2" onchange="this.form.submit()">
+    <option value="">-- All Events --</option>
+    {% for event in events %}
+      <option value="{{ event.id }}" {% if selected_event_id == event.id %}selected{% endif %}>
+        {{ event.name }}
+      </option>
+    {% endfor %}
+  </select>
+</form>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Event</th>
+      <th>Own Payment</th>
+      <th>Collected Amount</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in chandas %}
+    <tr>
+      <td>{{ c.member.name }}</td>
+      <td>{{ c.event.name }}</td>
+      <td>₹{{ '%.2f' % c.own_payment }}</td>
+      <td>₹{{ '%.2f' % c.collected_amount }}</td>
+      <td><strong>₹{{ '%.2f' % (c.own_payment + c.collected_amount) }}</strong></td>
+      <td>
+        <a href="{{ url_for('chanda.edit_chanda', id=c.id) }}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{{ url_for('chanda.delete_chanda', id=c.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+     <!-- Total Row -->
+     <tr class="table-secondary fw-bold">
+      <td colspan="2" class="text-end">Total (This Page):</td>
+      <td>₹{{ '{:,.2f}'.format(total_own) }}</td>
+      <td>₹{{ '{:,.2f}'.format(total_collected) }}</td>
+      <td colspan="2">₹{{ '{:,.2f}'.format(total_collected + total_own) }}</td>
+      </tr>
+  </tbody>
+</table>
+
+
+<!-- Pagination -->
+<nav>
+  <ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('chanda.list_chanda', page=pagination.prev_num) }}">&laquo; Prev</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+    {% endif %}
+
+    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if page_num %}
+        {% if page_num == pagination.page %}
+        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('chanda.list_chanda', page=page_num) }}">{{ page_num }}</a></li>
+        {% endif %}
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('chanda.list_chanda', page=pagination.next_num) }}">Next &raquo;</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}
+
+
+
+
+

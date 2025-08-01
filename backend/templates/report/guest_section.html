@@ -1,0 +1,21 @@
+<h4>🧑‍🤝‍🧑 Guest Payments</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Name</th><th class="text-center">Event</th><th class="text-center">Amount</th></tr>
+  </thead>
+  <tbody>
+    {% set ns = namespace(total=0) %}
+    {% for g in guest_payments %}
+    <tr>
+      <td >{{ g.guest.name }}</td>
+      <td class="text-center">{{ g.event.name }}</td>
+      <td class="text-center">₹{{ '{:,.2f}'.format(g.amount) }}</td>
+    </tr>
+    {% set ns.total = ns.total + g.amount %}
+    {% endfor %}
+    <tr class="table-success">
+      <th colspan="2" class="text-end">Total</th>
+      <th>₹{{ '{:,.2f}'.format(ns.total) }}</th>
+    </tr>
+  </tbody>
+</table>

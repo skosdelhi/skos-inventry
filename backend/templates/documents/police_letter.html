@@ -1,0 +1,56 @@
+{% extends 'documents/layout_letpdf.html' %}
+
+{% block title %}Police Permission Letter{% endblock %}
+
+{% block content %}
+
+<div style="margin-top: 40px;">
+  <p>To,</p>
+  <p>The Officer In Charge,<br>{{ station_name }} Police Station</p>
+
+  <p><strong>Subject:</strong> {{ current_subject  or "Permission Request for Event"}} </p>
+
+  <p>Dear Sir/Madam,</p>
+
+  <p style="margin-bottom: 20px;">
+    With due respect, We take this opportunity to introduce {{ org_name }}, Garhi, 
+    East of Kailash, New Delhi - 110065 is a platform for the people with Odia connection to come 
+    together and develop closer social and cultural interaction. 
+    The Association aims to keep alive the rich heritage of Odia Culture among Odias 
+    residing in New Delhi .Our mission is to Promote the native cultures and communities of Odisha. 
+  </p> 
+  
+  <p style="margin-bottom: 20px;">
+    You would be pleased to know that we have been celebrating the holy occasion of {{ event.name }} 
+    since last 20 years. Apart from this we have been celebrating {{ other_name }}. 
+    Hundreds of devotees of all community are participating in this auspicious occasion. 
+  </p>
+
+  <p style="margin-bottom: 20px;">
+    The Puja is being held in {{ event.venue_name }} on {{ event.date.strftime('%d %B %Y') }}  ,this purpose we need your permission 
+    to organise this event & evening cultural program with sound DJ upto 10 pm 
+    and also support of yours to organise this event in a hassel free mannar without having any 
+    social trouble. 
+  </p>
+
+  <p>
+    We would be grateful for your support and necessary permission.
+  </p>
+
+  <!-- Signature and Details -->
+  <table style="width: 100%; margin-top: 40px; font-size: 15px;">
+    <tr>
+      <td style="text-align: left;">
+        <p><strong>Date:</strong> {{ current_date }}</p>
+        <p><strong>Place:</strong> {{ place or 'New Delhi' }}</p>
+      </td>
+      <td style="text-align: right;">
+        <p>Sincerely,</p>
+        <!-- <p><strong>Secretary</strong></p> -->
+        <p>{{ org_name }}</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+{% endblock %}

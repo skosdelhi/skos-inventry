@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block subtitle %}
+<h2 class="text-center mb-4">📋 {{ event.name }} ({{ event.date.strftime('%d-%b-%Y') }})</h2>
+{% endblock %}
+
+{% block content %}
+<div class="mb-3 text-end">
+  <a href="{{ url_for('main.generate_pdf',event_id=event_id) }}" class="btn btn-sm btn-danger" target="_blank">
+    📄 Download PDF Summary Report
+  </a> <a href="{{ url_for('main.generate_full_summary_pdf',event_id=event_id) }}" class="btn btn-sm btn-danger" target="_blank">
+    📄 Download PDF Full Report
+  </a>
+</div>
+
+  {% include 'report/summary_section.html' %}
+  {% include 'report/chanda_section.html' %}
+  {% include 'report/guest_section.html' %}
+
+  <h4>💸 Expense Details</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Category</th><th>Heading</th><th>Amount (₹)</th><th>Bought By</th></tr>
+  </thead>
+  
+  <tbody>
+    {% set ns = namespace(total_amount=0) %}
+    {% for exp in expenses %}
+      {% set ns.total_amount = ns.total_amount + (exp.amount or 0) %}
+      <tr>
+        <td>{{ categories.get(exp.category_id, "Unknown") }}</td>
+        <td>{{ exp.heading }}</td>
+        <td>{{  exp.amount | inr  }}</td>
+        
+        <td>
+          {% if exp.bought_by %}
+            {{ exp.bought_by | map(attribute='name') | map('spacefirst_name') | join(', ') }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        
+      </tr>
+    {% endfor %}
+    <tr class="table-success">
+      <th></th>
+      <th class="text-end">Total</th>
+      <th>{{ ns.total_amount | inr  }}</th>
+      <th></th>
+    </tr>
+  </tbody>
+  
+</table>
+{% endblock %}

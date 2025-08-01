@@ -1,0 +1,77 @@
+<h4 class="mt-4">📋 Collection Summary</h4>
+<table class="table table-bordered">
+  <thead class="table-light">
+    <tr>
+      <th>Source</th>
+      <th class="text-start">Amount (₹)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>👤 Member Collection</td>
+      <td class="text-start">{{ member_collection | inr }}</td>
+    </tr>
+    <tr>
+      <td>🧑‍ Guest & Other Collection</td>
+      <td class="text-start">{{ guest_collection  | inr }}</td>
+    </tr>
+    <tr>
+      <td>📚 Book Collection</td>
+      <td class="text-start">₹{{ book_collection  | inr }}</td>
+    </tr>
+    <tr class="table-success fw-bold">
+      <th class="text-end">💰 Total Collection</th>
+      <th class="text-start">{{ total_collection | inr  }}</th>
+    </tr>
+  </tbody>
+</table>
+
+<h4 class="mt-4">💸 Expense Summary</h4>
+<table class="table table-bordered">
+  <thead class="table-light">
+    <tr>
+      <th>Category</th>
+      <th class="text-start">Total Amount (₹)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cat, amt in expense_totals_by_category.items() %}
+    <tr>
+      <td>{{ cat }}</td>
+      <td class="text-start">{{ amt | inr  }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="table-danger fw-bold">
+      <th class="text-end">💸 Total Expenses</th>
+      <th class="text-start">{{ total_expenses  | inr }}</th>
+    </tr>
+  </tbody>
+</table>
+
+<h4 class="mt-4">📊 Final Balances</h4>
+<table class="table table-bordered">
+  <tbody>
+    <tr>
+      <th>Balance (Collection - Expenses)</th>
+      <td class="text-start">{{ balance  | inr }}</td>
+    </tr>
+    <tr>
+      <th>Bank Withdrawal</th>
+      <td class="text-start">{{ bank_withdrawal  | inr }}</td>
+    </tr>
+    <tr>
+      <th>Bank Balance</th>
+      <td class="text-start">{{ bank_balance | inr }}</td>
+    </tr>
+    <tr>
+      <th>Bank Interest</th>
+      <td class="text-start">{{ bank_interest  | inr }}</td>
+    </tr>
+    <tr class="table-info fw-bold">
+      <th class="text-end">💹Total Balance</th>
+      <td class="text-start text-success">
+        {{ (balance + bank_interest + bank_balance + bank_withdrawal)  | inr }}
+      </td>
+    </tr>
+  </tbody>
+</table>

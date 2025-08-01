@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}Add Chanda{% endblock %}
+{% block content %}
+<h2>Add Chanda</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label>Member</label>
+    <select name="member_id" class="form-control" required>
+      {% for member in members %}
+        <option value="{{ member.id }}">{{ member.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Event</label>
+    <select name="event_id" class="form-control" required>
+      {% for event in events %}
+        <option value="{{ event.id }}">{{ event.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label>Own Payment</label>
+    <input type="number" step="0.01" name="own_payment" class="form-control" >
+  </div>
+  <div class="mb-3">
+    <label>Collected Amount</label>
+    <input type="number" step="0.01" name="collected_amount" class="form-control" >
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,158 @@
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from flask import render_template, redirect, url_for
+
+
+app = Flask(__name__)
+CORS(app)
+
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///social_org.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://org_user:khirod123@localhost/social_org_db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Models
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    phone = db.Column(db.String(15))
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    date = db.Column(db.String(20))
+
+class Chanda(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    own_payment = db.Column(db.Float)
+    collected_amount = db.Column(db.Float)
+
+class Guest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    phone = db.Column(db.String(15))
+    address = db.Column(db.String(200))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    amount = db.Column(db.Float)
+
+class Expense(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    category = db.Column(db.String(100))
+    amount = db.Column(db.Float)
+    remarks = db.Column(db.String(200))
+
+# Routes
+@app.route('/api/members', methods=['GET'])
+def get_members():
+    members = Member.query.all()
+    return jsonify([{"id": m.id, "name": m.name, "phone": m.phone} for m in members])
+
+@app.route('/api/members', methods=['POST'])
+def add_member_offline():
+    data = request.get_json()
+    new_member = Member(name=data['name'], phone=data['phone'])
+    db.session.add(new_member)
+    db.session.commit()
+    return jsonify({"status": "success", "id": new_member.id})
+
+@app.route('/members')
+def list_members():
+    page = request.args.get('page', 1, type=int)
+    per_page = 2  # 👈 You can change this number
+    pagination = Member.query.order_by(Member.id.desc()).paginate(page=page, per_page=per_page)
+    return render_template('members.html', pagination=pagination, members=pagination.items)
+
+
+# --- Add Member ---
+@app.route('/member/add', methods=['GET', 'POST'])
+def add_member():
+    if request.method == 'POST':
+        name = request.form['name']
+        phone = request.form['phone']
+        db.session.add(Member(name=name, phone=phone))
+        db.session.commit()
+        return redirect(url_for('list_members'))
+    return render_template('add_member.html')
+
+# --- Edit Member ---
+@app.route('/member/edit/<int:id>', methods=['GET', 'POST'])
+def edit_member(id):
+    member = Member.query.get_or_404(id)
+    if request.method == 'POST':
+        member.name = request.form['name']
+        member.phone = request.form['phone']
+        db.session.commit()
+        return redirect(url_for('list_members'))
+    return render_template('edit_member.html', member=member)
+
+# --- Delete Member ---
+@app.route('/member/delete/<int:id>')
+def delete_member(id):
+    member = Member.query.get_or_404(id)
+    db.session.delete(member)
+    db.session.commit()
+    return redirect(url_for('list_members'))
+
+# --- Index redirect ---
+@app.route('/')
+def index():
+    return redirect(url_for('list_members'))
+
+""" @app.route('/')
+def index():
+    return "✅ Social Organization Management API is running!" """
+
+@app.route('/api/events', methods=['GET'])
+def list_events():
+    events = Event.query.all()
+    return jsonify([{"id": e.id, "name": e.name, "date": e.date} for e in events])
+
+@app.route('/api/events', methods=['POST'])
+def add_event():
+    data = request.get_json()
+    new_event = Event(name=data['name'], date=data['date'])
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify({"status": "success", "id": new_event.id})
+
+@app.route('/api/chanda', methods=['POST'])
+def add_chanda():
+    data = request.get_json()
+    chanda = Chanda(member_id=data['member_id'], event_id=data['event_id'],
+                    own_payment=data['own_payment'], collected_amount=data['collected_amount'])
+    db.session.add(chanda)
+    db.session.commit()
+    return jsonify({"status": "success"})
+
+@app.route('/api/guests', methods=['POST'])
+def add_guest():
+    data = request.get_json()
+    guest = Guest(name=data['name'], phone=data['phone'], address=data['address'],
+                  event_id=data['event_id'], amount=data['amount'])
+    db.session.add(guest)
+    db.session.commit()
+    return jsonify({"status": "success"})
+
+@app.route('/api/expenses', methods=['POST'])
+def add_expense():
+    data = request.get_json()
+    expense = Expense(event_id=data['event_id'], category=data['category'],
+                      amount=data['amount'], remarks=data['remarks'])
+    db.session.add(expense)
+    db.session.commit()
+    return jsonify({"status": "success"})
+
+""" if __name__ == '__main__':
+    db.create_all()
+    app.run(debug=True) """
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # <-- this is now safely inside app context
+    app.run(debug=True)
+    

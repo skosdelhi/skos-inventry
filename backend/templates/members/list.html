@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}Members List{% endblock %}
+
+{% block content %}
+<h2>All Members</h2>
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <a href="{{ url_for('members.add_member') }}" class="btn btn-primary">➕ Add Member</a>
+  <a href="{{ url_for('members.upload_members') }}" class="btn btn-success">📤 Upload CSV</a>
+  <a href="{{ url_for('members.download_members') }}" class="btn btn-success">📥 Download Members CSV</a>
+  <a href="{{ url_for('members.download_members_pdf') }}" class="btn btn-success">📥 Download Members PDF</a>
+</div>
+
+
+
+<table class="table table-bordered">
+  <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Status</th><th>Actions</th></tr></thead>
+  <tbody id="sortableTableBody">
+    
+    {% for member in members %}
+    
+    <tr data-id="{{ member.id }}">
+      <td>{{ member.order }}</td>
+      <td>{{ member.name }}</td>
+      <td>{{ member.phone }}</td>
+      <td>{{ member.address }}</td>
+      <td>{{ member.status }}</td>
+      <td>
+        <a href="{{ url_for('members.edit_member', id=member.id) }}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{{ url_for('members.delete_member', id=member.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  
+</table>
+
+<!-- Pagination -->
+<nav>
+  <ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('members.list_members', page=pagination.prev_num) }}">&laquo; Prev</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+    {% endif %}
+
+    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if page_num %}
+        {% if page_num == pagination.page %}
+        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('members.list_members', page=page_num) }}">{{ page_num }}</a></li>
+        {% endif %}
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="{{ url_for('members.list_members', page=pagination.next_num) }}">Next &raquo;</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+<!-- SortableJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+  const tbody = document.getElementById('sortableTableBody');
+  Sortable.create(tbody, {
+    animation: 150,
+    onEnd: function () {
+      const newOrder = Array.from(tbody.children).map((row, index) => ({
+        id: row.dataset.id,
+        order: index
+      }));
+
+      fetch('{{ url_for("members.update_order") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          
+        },
+        body: JSON.stringify(newOrder)
+      }).then(res => {
+        if (res.ok) {
+          console.log('Order updated');
+        } else {
+          console.error('Error updating order');
+        }
+      });
+    }
+  });
+</script>
+
+{% endblock %}

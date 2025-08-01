@@ -1,0 +1,32 @@
+<!-- templates/events.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<h2>All Events</h2>
+<a href="{{ url_for('events.add_event') }}" class="btn btn-primary mb-3">➕ Add Event</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th><th>Name</th><th>Date</th><th>Location</th><th>Description</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.id }}</td>
+      <td>{{ event.name }}</td>
+      <td>{{ event.date }}</td>
+      <td>{{ event.location }}</td>
+      <td>{{ event.description }}</td>
+      <td>
+        <a href="{{ url_for('events.edit_event', id=event.id) }}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{{ url_for('events.delete_event', id=event.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

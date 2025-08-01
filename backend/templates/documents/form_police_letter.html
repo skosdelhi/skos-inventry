@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block subtitle %}
+<h2 class="text-center">🚨 Generate Police Permission Letter</h2>
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+  <div class="mb-3">
+    <label for="station_name" class="form-label">Police Station Name</label>
+    <input type="text" name="station_name" value ="Amar Colony" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="current_subject" class="form-label">Subject</label>
+    <input type="text" name="current_subject" value = "Permission Request for Ganesha Puja" class="form-control" required>
+  </div>
+  <div class="mb-3">
+  <label for="venue_name" class="form-label">Venue Details</label>
+  <textarea name="venue_name" class="form-control" required >Community Hall , Near Dispensary,Garhi,East of Kailash,New Delhi – 110065</textarea>
+  </div>
+  <div class="mb-3">  
+    <label for="other_name" class="form-label">Other Event</label>
+    <input type="text" name="other_name" class="form-control" required>
+    </div>
+  <div class="mb-3">
+    <label for="event_id" class="form-label">Select Event</label>
+    <select name="event_id" class="form-select" required>
+      {% for event in events %}
+      <option value="{{ event.id }}">{{ event.name }} - {{ event.date }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Member By:</label>
+    <select name="bought_by" class="form-control" multiple size="20" required>
+      {% for member in members %}
+        <option value="{{ member.id}}">{{ member.name }}--{{member.phone}}</option>
+      {% endfor %}
+    </select>
+    
+  </div>
+  <button type="submit" class="btn btn-primary">Generate Letter</button>
+</form>
+{% endblock %}

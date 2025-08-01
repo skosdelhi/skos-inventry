@@ -1,0 +1,157 @@
+{% extends 'layout.html' %}
+<style>
+  @page {
+    margin-top: 5px; /* or 0 if you want no margin */
+    margin-bottom: 10px;
+  }
+  body {
+    margin-top: 0px;
+    margin-bottom: 10px;
+  }
+</style>
+{% block subtitle %}
+<header class="mb-4">
+  <h6 class="text-center">Collection & Expense Summary for : {{ event.name }} ({{ event.date.strftime('%d-%b-%Y') }})</h6>
+   
+    <p><small><strong>Date:</strong> {{ today_date }}</small></p>
+    {% if not is_pdf %}    
+<a href="{{ url_for('main.generate_pdf') }}" class="btn btn-sm btn-danger float-end" target="_blank">
+  📄 Download PDF
+</a>
+{% endif %}
+  </header>
+{% endblock %}
+
+{% block content %}
+<h4>📋 Collection Summary</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Source</th><th>Amount (₹)</th></tr></thead>
+  <tbody>
+    <tr><td>👤 Member Collection</td><td>₹{{ '{:,.2f}'.format(member_collection or 0) }}</td></tr>
+    <tr><td>🧑‍ Guest & Other Collection</td><td>₹{{ '{:,.2f}'.format(guest_collection or 0) }}</td></tr>
+    <tr><td>📚 Book Collection</td><td>₹{{ '{:,.2f}'.format(book_collection or 0) }}</td></tr>
+    <tr class="table-primary"><th>💰 Total Collection</th><th>₹{{ '{:,.2f}'.format(total_collection or 0) }}</th></tr>
+  </tbody>
+</table>
+
+<h4>💸 Expense Summary</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Category</th><th>Total Amount (₹)</th></tr></thead>
+  <tbody>
+    {% for cat, amt in expense_totals.items() %}
+    <tr><td>{{ cat }}</td><td>₹{{ '{:,.2f}'.format(amt) }}</td></tr>
+    {% endfor %}
+    <tr class="table-primary"><th>Total Expenses</th><th>₹{{ '{:,.2f}'.format(total_expenses or 0) }}</th></tr>
+  </tbody>
+</table>
+
+<h4>📊 Final Balances</h4>
+<table class="table table-bordered">
+  <tr><th>Balance (Collection - Expenses)</th><td table-primary>₹{{ '{:,.2f}'.format(balance or 0) }}</td></tr>
+  <tr><th>Bank_withdrawal</th><td>₹{{ '{:,.2f}'.format(bank_withdrawal or 0) }}</td></tr>
+   <tr><th>Bank Balance</th><td>₹{{ '{:,.2f}'.format(bank_balance or 0) }}</td></tr>
+   <tr><th>Bank Interest</th><td>₹{{ '{:,.2f}'.format(bank_interest or 0) }}</td></tr>
+  <tr class="table-primary"><th>Total Balance</th><td><strong>₹{{ '{:,.2f}'.format(total_balance+bank_interest or 0) }}</strong></td></tr>
+</table>
+<table>
+  <tr>
+    <td style="width: 200px; height: auto;">
+      <img src="{{ statement_img }}" alt="Statement" style="max-width: 100%; height: auto;">
+    </td>
+  </tr>
+</table>
+
+{% if not is_pdf %}
+<div class="row">
+    <!-- Expense Chart -->
+    <div class="col-md-5">
+      <h5>💸 Expense Chart</h5>
+      <canvas id="expenseChart" height="200"></canvas>
+    </div>
+   
+     
+    <!-- Collection Chart -->
+    
+      <h5>💰 Collection Chart</h5>
+      <canvas id="collectionChart" height="200"></canvas>
+    </div>
+  </div>
+ <!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('expenseChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',  // change to 'pie' or 'doughnut' if needed
+    data: {
+      labels: {{ chart_labels|tojson }},
+      datasets: [{
+        label: 'Expenses (₹)',
+        data: {{ chart_values|tojson }},
+        backgroundColor: [
+          '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'
+        ],
+        barThickness: 40,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Expenses by Category'
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: value => '₹' + value
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+    const collectionCtx = document.getElementById('collectionChart').getContext('2d');
+    const collectionChart = new Chart(collectionCtx, {
+      type: 'bar', // or 'pie'
+      data: {
+        labels: {{ collection_labels|tojson }},
+        datasets: [{
+          label: 'Collections (₹)',
+          data: {{ collection_values|tojson }},
+          backgroundColor: ['#17a2b8', '#fd7e14', '#20c997'],
+          barThickness: 50,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Collections by Source'
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => '₹' + value
+            }
+          }
+        }
+      }
+    });
+  </script>
+  {% endif %}
+{% endblock %}
+

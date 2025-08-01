@@ -1,0 +1,25 @@
+<h4>📘 Chanda Details</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr><th>Name</th><th class="text-center">Chanda</th><th class="text-center">Book Amount</th><th class="text-center">Total</th></tr>
+  </thead>
+  <tbody>
+    {% set ns = namespace(total_own=0, total_collected=0) %}
+    {% for c in chandas %}
+    <tr>
+      <td>{{ c.member.name }}</td>
+      <td class="text-center">{{ c.own_payment | inr  }}</td>
+      <td class="text-center">{{ c.collected_amount | inr  }}</td>
+      <td class="text-center">{{ (c.own_payment + c.collected_amount) | inr   }}</td>
+    </tr>
+    {% set ns.total_own = ns.total_own + (c.own_payment or 0) %}
+    {% set ns.total_collected = ns.total_collected + (c.collected_amount or 0) %}
+    {% endfor %}
+    <tr class="table-success">
+      <th class="text-end">Total</th>
+      <th class="text-center">{{ (ns.total_own) | inr  }}</th>
+      <th class="text-center">{{ (ns.total_collected) | inr  }}</th>
+      <th class="text-center">{{ (ns.total_own + ns.total_collected) | inr  }}</th>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,29 @@
+<!-- templates/edit_event.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block content %}
+<h2>Edit Event</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label class="form-label">Name:</label>
+    <input type="text" name="name" value="{{ event.name }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Date:</label>
+    <input type="date" name="date" value="{{ event.date }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Location:</label>
+    <input type="text" name="location" value="{{ event.location }}" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description:</label>
+    <textarea name="description" class="form-control" rows="4">{{ event.description }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-success">Update</button>
+  <a href="{{ url_for('events.list_events') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
+s

@@ -1,0 +1,158 @@
+{% extends 'layout.html' %}
+<style>
+  @page {
+    margin-top: 5px; /* or 0 if you want no margin */
+    margin-bottom: 10px;
+  }
+  body {
+    margin-top: 0px;
+    margin-bottom: 10px;
+  }
+  
+</style>
+{% block subtitle %}
+<header class="mb-4">
+  <h6 class="text-center">Collection & Expense Summary for : {{ event.name }} ({{ event.date.strftime('%d-%b-%Y') }})</h6>
+   
+    <p><small><strong>Date:</strong> {{ today_date }}</small></p>
+    {% if not is_pdf %}    
+<a href="{{ url_for('main.generate_pdf',event_id=event_id) }}" class="btn btn-sm btn-danger float-end" target="_blank">
+  📄 Download PDF
+</a>
+{% endif %}
+  </header>
+{% endblock %}
+
+{% block content %}
+<h4>📋 Collection Summary</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Source</th><th>Amount (₹)</th></tr></thead>
+  <tbody>
+    <tr><td>👤 Member Collection</td><td>{{ member_collection | inr }}</td></tr>
+    <tr><td>🧑‍ Guest & Other Collection</td><td>{{ guest_collection | inr }}</td></tr>
+    <tr><td>📚 Book Collection</td><td>{{ book_collection | inr }}</td></tr>
+    <tr class="table-primary"><th>💰 Total Collection</th><th>{{ total_collection | inr }}</th></tr>
+  </tbody>
+</table>
+
+<h4>💸 Expense Summary</h4>
+<table class="table table-bordered">
+  <thead><tr><th>Category</th><th>Total Amount (₹)</th></tr></thead>
+  <tbody>
+    {% for cat, amt in expense_totals_by_category.items() %}
+    <tr><td>{{ cat }}</td><td>{{ amt | inr }}</td></tr>
+    {% endfor %}
+    <tr class="table-primary"><th>Total Expenses</th><th>{{ total_expenses | inr }}</th></tr>
+  </tbody>
+</table>
+
+<h4>📊 Final Balances</h4>
+<table class="table table-bordered">
+  <tr><th>Balance (Collection - Expenses)</th><td table-primary>{{  balance | inr }}</td></tr>
+  <tr><th>Bank_withdrawal</th><td>{{ bank_withdrawal | inr }}</td></tr>
+   <tr><th>Bank Balance</th><td>{{ bank_balance | inr}}</td></tr>
+   <tr><th>Bank Interest</th><td>{{ bank_interest | inr }}</td></tr>
+  <tr class="table-primary"><th>Total Balance</th><td><strong>{{ (balance + bank_balance + bank_interest+ bank_withdrawal) | inr }}</strong></td></tr>
+</table>
+<table>
+  <tr>
+    <td style="width: 200px; height: auto;">
+      <img src="{{ statement_img }}" alt="Statement" style="max-width: 100%; height: auto;">
+    </td>
+  </tr>
+</table>
+
+{% if not is_pdf %}
+<div class="row">
+    <!-- Expense Chart -->
+    <div class="col-md-5">
+      <h5>💸 Expense Chart</h5>
+      <canvas id="expenseChart" height="200"></canvas>
+    </div>
+   
+     
+    <!-- Collection Chart -->
+    
+      <h5>💰 Collection Chart</h5>
+      <canvas id="collectionChart" height="200"></canvas>
+    </div>
+  </div>
+ <!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('expenseChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',  // change to 'pie' or 'doughnut' if needed
+    data: {
+      labels: {{ chart_labels|tojson }},
+      datasets: [{
+        label: 'Expenses (₹)',
+        data: {{ chart_values|tojson }},
+        backgroundColor: [
+          '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'
+        ],
+        barThickness: 40,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Expenses by Category'
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: value => '₹' + value
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+    const collectionCtx = document.getElementById('collectionChart').getContext('2d');
+    const collectionChart = new Chart(collectionCtx, {
+      type: 'bar', // or 'pie'
+      data: {
+        labels: {{ collection_labels|tojson }},
+        datasets: [{
+          label: 'Collections (₹)',
+          data: {{ collection_values|tojson }},
+          backgroundColor: ['#17a2b8', '#fd7e14', '#20c997'],
+          barThickness: 50,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Collections by Source'
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => '₹' + value
+            }
+          }
+        }
+      }
+    });
+  </script>
+  {% endif %}
+{% endblock %}
+
