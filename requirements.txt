@@ -5,5 +5,5 @@ psycopg2-binary==2.9.9
 Flask-Login==0.6.3
 weasyprint==60.1
 pypdf==4.2.0
-flask_migrate
-Babel
+Flask-Migrate==4.0.5
+Babel==2.14.0
