@@ -6,3 +6,4 @@ Flask-Login==0.6.3
 weasyprint==60.1
 pypdf==4.2.0
 flask_migrate
+Babel
