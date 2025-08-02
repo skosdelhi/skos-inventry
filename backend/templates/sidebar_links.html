@@ -1,0 +1,14 @@
+<div class="sidebar">
+    <a href="{{ url_for('dashboard.dashboard') }}" class="dashboard-link highlighted">📊 Dashboard</a>
+    <hr class="sidebar-divider">
+    <a href="{{ url_for('members.list_members') }}">👥 Members <span class="badge">52</span></a>
+    <a href="{{ url_for('events.list_events') }}">📅 Manage Events <span class="badge">3</span></a>
+    <a href="{{ url_for('chanda.list_chanda') }}">💵 Manage Chanda</a>
+    <a href="{{ url_for('guests.list_guests') }}">🧑‍💼 Manage Guest <span class="badge">41</span></a>
+    <a href="{{ url_for('guest_payments.list_payments') }}">💰 Guest Payments</a>
+    <a href="{{ url_for('expenses.list_expenses') }}">🧾 Manage Expenses</a>
+    <a href="{{ url_for('bank.list_bank') }}">🏦 Manage Bank</a>
+    <a href="{{ url_for('skosdoc.generate_police_letter') }}">🚓 Police Permission</a>
+    <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+  </div>
+  
