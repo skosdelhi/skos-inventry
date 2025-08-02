@@ -58,12 +58,12 @@
             N/A
           {% endif %}
         </td>
-      <td>
+      <td> <div class="d-flex flex-wrap gap-2">
         <a href="{{ url_for('expenses.edit_expense', id=exp.id) }}" class="btn btn-warning btn-sm">Edit</a>
         <form method="POST" action="{{ url_for('expenses.delete_expense', id=exp.id) }}" style="display:inline;" onsubmit="return confirm('Delete this expense?');">
           <button class="btn btn-danger btn-sm">Delete</button>
         </form>
-      </td>
+      </div></td>
     </tr>
     {% endfor %}
     <!-- Total Row (This Page) -->

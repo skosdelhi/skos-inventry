@@ -22,8 +22,10 @@
       <td>{{ bk.interest_amount | inr }}</td>
       <td>{{ bk.balance_amount  | inr}}</td>
       <td>
-        <a href="{{ url_for('bank.edit_bank', id=bk.id) }}" class="btn btn-warning btn-sm">Edit</a>
-        <a href="{{ url_for('bank.delete_bank', id=bk.id) }}" class="btn btn-danger btn-sm">Delete</a>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('bank.edit_bank', id=bk.id) }}" class="btn btn-warning btn-sm">Edit</a>
+          <a href="{{ url_for('bank.delete_bank', id=bk.id) }}" class="btn btn-danger btn-sm">Delete</a>
+        </div>
       </td>
     </tr>
     {% endfor %}

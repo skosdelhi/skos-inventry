@@ -21,9 +21,10 @@
       <td>{{ event.date }}</td>
       <td>{{ event.location }}</td>
       <td>{{ event.description }}</td>
-      <td>
+      <td> <div class="d-flex flex-wrap gap-2">
         <a href="{{ url_for('events.edit_event', id=event.id) }}" class="btn btn-warning btn-sm">Edit</a>
         <a href="{{ url_for('events.delete_event', id=event.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </div>
       </td>
     </tr>
     {% endfor %}

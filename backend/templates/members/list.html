@@ -26,8 +26,10 @@
       <td>{{ member.address }}</td>
       <td>{{ member.status }}</td>
       <td>
+        <div class="d-flex flex-wrap gap-2">
         <a href="{{ url_for('members.edit_member', id=member.id) }}" class="btn btn-warning btn-sm">Edit</a>
         <a href="{{ url_for('members.delete_member', id=member.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </div>
       </td>
     </tr>
     {% endfor %}

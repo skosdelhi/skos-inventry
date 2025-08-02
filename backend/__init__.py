@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from babel.numbers import format_currency
+from datetime import datetime
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'  # This refers to the 'login' route in the 'auth' blueprint
@@ -66,6 +67,7 @@ def create_app():
          }
       return get_counts()
    
-  
-
+    @app.context_processor
+    def inject_now():
+      return {'current_year': datetime.now().year} 
     return app
